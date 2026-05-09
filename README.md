@@ -1,4 +1,4 @@
-# Bận hay Lười? - Backend API
+# Bận Hay Lười? — Backend API
 
 ![Version](https://img.shields.io/badge/version-2.0.0-purple)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-green)
@@ -6,232 +6,270 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Coverage](https://img.shields.io/badge/coverage-82.57%25-brightgreen)
 
-## 📱 Giới Thiệu
+Backend REST API cho ứng dụng mobile **“Bận hay Lười?”** — giúp người dùng phân biệt giữa **kiệt sức thật sự** và **sự trì hoãn/lười biếng** thông qua bài quiz khoa học gồm 10 câu hỏi.
 
-Backend API cho ứng dụng di động **"Bận hay Lười?"** - ứng dụng giúp người dùng phân biệt giữa kiệt sức thật sự và lười biếng thông qua bài quiz 10 câu hỏi.
+---
 
-### Tính Năng Chính
+# 📱 Overview
 
-- **Xác thực người dùng**: Đăng ký, đăng nhập với JWT
-- **Quiz thông minh**: 10 câu hỏi, phân loại 6 trạng thái (Kiệt sức → Tập trung cao)
-- **Lịch sử**: Xem lại kết quả các lần kiểm tra trước
-- **Feedback**: Gửi phản hồi, báo lỗi từ người dùng
+## Core Features
 
-### Kiến Trúc
+### Authentication
+- Đăng ký / Đăng nhập bằng JWT  
+- Hash mật khẩu với bcrypt  
 
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│ Mobile App      │────>│ Express API     │────>│ MongoDB Atlas   │
-│ (React Native)  │     │ (Node.js)       │     │ (Cloud)         │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
+### Smart Quiz Engine
+Quiz 10 câu hỏi giúp phân loại 6 trạng thái năng lượng:
+- Kiệt sức  
+- Mệt mỏi  
+- Thiếu động lực  
+- Bình thường  
+- Năng lượng tốt  
+- Tập trung cao  
 
+### History Tracking
+- Lưu lịch sử các lần làm quiz  
+- Xem lại kết quả chi tiết  
 
-### Công Nghệ Sử Dụng
+### User Feedback
+- Gửi phản hồi và báo lỗi từ người dùng  
 
-| Công Nghệ              | Mục Đích            |
-|------------------------|---------------------|
-| **Node.js + Express**  | Backend framework   |
-| **MongoDB + Mongoose** | Database & ODM      |
-| **JWT (jsonwebtoken)** | Xác thực người dùng |
-| **bcryptjs**           | Mã hóa mật khẩu     |
-| **Jest + Supertest**   | Unit testing        |
-| **Swagger**            | API Documentation   |
-| **Railway**            | Deployment          |
+---
 
-### Cấu Trúc Thư Mục
-backend/
-├── src/
-│ ├── config/ # Cấu hình database, swagger
-│ ├── controllers/ # Xử lý logic request/response
-│ ├── middleware/ # Auth, validation, error handling
-│ ├── models/ # MongoDB schemas (User, History, Feedback)
-│ ├── routes/ # Định tuyến API endpoints
-│ ├── services/ # Business logic (quiz scoring)
-│ ├── utils/ # Constants, helpers
-│ └── validators/ # Validation rules
-├── tests/
-│ └── unit/ # Unit tests (Jest)
-├── .env.example # Mẫu biến môi trường
-├── jest.config.js # Cấu hình testing
-├── railway.json # Cấu hình deploy Railway
-└── swagger.yaml # API documentation
+# System Architecture
 
-
-## Cài Đặt & Chạy
-
-### Yêu Cầu
-
-- Node.js >= 18.0.0
-- MongoDB Atlas account (free) hoặc MongoDB local
-
-### Cài Đặt
-
-```bash
-# 1. Clone repository
-git clone https://github.com/<your-username>/ban-hay-luoi-backend.git
-cd ban-hay-luoi-backend
+```
+Mobile App (React Native)
+        │
+        ▼
+Express REST API (Node.js)
+        │
+        ▼
+MongoDB Atlas (Cloud Database)
 ```
 
-# 2. Cài đặt dependencies
+---
+
+# Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| Node.js + Express | Backend framework |
+| MongoDB + Mongoose | Database & ODM |
+| JWT (jsonwebtoken) | Authentication |
+| bcryptjs | Password hashing |
+| Jest + Supertest | Testing |
+| Swagger | API Documentation |
+| Railway | Deployment |
+
+---
+
+# Project Structure
+
+```
+backend/
+│
+├── src/
+│   ├── config/        # Database & Swagger config
+│   ├── controllers/   # Request/Response handlers
+│   ├── middleware/    # Auth, validation, error handling
+│   ├── models/        # MongoDB schemas
+│   ├── routes/        # API routes
+│   ├── services/      # Business logic (quiz scoring)
+│   ├── utils/         # Helpers & constants
+│   └── validators/    # Input validation
+│
+├── tests/unit/        # Unit tests (Jest)
+├── .env.example       # Environment variables template
+├── jest.config.js
+├── railway.json
+└── swagger.yaml
+```
+
+---
+
+# Getting Started
+
+## Prerequisites
+
+- Node.js ≥ 18
+- MongoDB Atlas account (hoặc MongoDB local)
+
+---
+
+# Installation
+
+## 1. Clone repository
+
+```bash
+git clone https://github.com/L01-MobileApp-HelloWorld/backend.git
+cd backend
+```
+
+## 2. Install dependencies
+
+```bash
 npm install
+```
 
-# 3. Tạo file .env từ mẫu
+## 3. Setup environment variables
+
+```bash
 cp .env.example .env
+```
 
-# 4. Chỉnh sửa .env với thông tin của bạn
-# MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/ban_hay_luoi
-# JWT_SECRET=your_secret_key
+Cập nhật file `.env`:
 
+```
+MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/ban_hay_luoi
+JWT_SECRET=your_secret_key
+PORT=3000
+```
 
-# Chạy Development
+---
+
+# ▶️ Run Application
+
+## Development mode
+
 ```bash
 npm run dev
-# Server chạy tại: http://localhost:3000
-# API Docs: http://localhost:3000/api-docs
 ```
-# Chạy Tests
+
+Server chạy tại:
+```
+http://localhost:3000
+```
+
+Swagger Docs:
+```
+http://localhost:3000/api-docs
+```
+
+---
+
+# Run Tests
+
 ```bash
 npm test
-# Coverage report sẽ hiển thị sau khi test xong
 ```
+
+Sau khi chạy test sẽ hiển thị coverage report.
+
+**Testing stack**
+- Framework: Jest + Supertest  
+- Database test: MongoMemoryServer  
+- Coverage:
+  - 82.57% Statements
+  - 71.96% Branches
+- Test cases: 32 tests / 4 test suites
+
+---
 
 # API Endpoints
-```bash
-Auth
-Method	Endpoint	Auth	Mô tả
-POST	/api/auth/register	❌	Đăng ký tài khoản
-POST	/api/auth/login	❌	Đăng nhập
-GET	/api/auth/profile	✅	Xem thông tin cá nhân
-Quiz & History
-Method	Endpoint	Auth	Mô tả
-POST	/api/history/submit	✅	Nộp bài quiz (10 câu)
-GET	/api/history	✅	Xem lịch sử kiểm tra
-GET	/api/history/:id	✅	Xem chi tiết 1 lần kiểm tra
-DELETE	/api/history/:id	✅	Xóa lịch sử
-Feedback
-Method	Endpoint	Auth	Mô tả
-POST	/api/feedback	✅	Gửi phản hồi/báo lỗi
-GET	/api/feedback/stats	✅	Xem thống kê feedback
-```
 
-# Testing
+## Auth
 
-Framework: Jest + Supertest
+- **POST /api/auth/register**
+  - Auth: ❌ Không cần đăng nhập
+  - Description: Đăng ký tài khoản mới
 
-Database test: MongoMemoryServer (MongoDB ảo trong RAM)
+- **POST /api/auth/login**
+  - Auth: ❌ Không cần đăng nhập
+  - Description: Đăng nhập hệ thống
 
-Coverage: 82.57% Statements, 71.96% Branches
+- **GET /api/auth/profile**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Lấy thông tin người dùng hiện tại
 
-Test cases: 32 tests, 4 test suites
+---
+
+## Quiz & History
+
+- **POST /api/history/submit**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Nộp bài quiz (10 câu hỏi)
+
+- **GET /api/history**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Lấy danh sách lịch sử làm quiz
+
+- **GET /api/history/:id**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Lấy chi tiết một lần làm quiz
+
+- **DELETE /api/history/:id**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Xóa một bản ghi lịch sử
+
+---
+
+## Feedback
+
+- **POST /api/feedback**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Gửi phản hồi hoặc báo lỗi
+
+- **GET /api/feedback/stats**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Lấy thống kê feedback
 
 # Deployment (Railway)
+
 Deploy tự động qua GitHub:
-Push code lên GitHub
 
-Vào Railway → New Project → Deploy from GitHub
+1. Push code lên GitHub  
+2. Vào Railway → New Project → Deploy from GitHub  
+3. Chọn repository  
+4. Thêm Environment Variables trên Railway dashboard  
+5. Mỗi lần push → tự động deploy  
 
-Chọn repository → Railway tự build & deploy
+---
 
-Thêm environment variables trong dashboard Railway
+# CI/CD Pipeline
 
-Backend tự động deploy mỗi khi push code mới
+- Platform: Railway
+- Auto deploy khi push branch chính
+- Health check: `GET /`
+- Rollback tự động nếu deploy fail
 
-# CI/CD Pipeline:
-Platform: Railway (tự động deploy khi push lên branch chính)
-
-Health check: GET / endpoint
-
-Rollback: Tự động nếu deploy fail
+---
 
 # API Documentation
-Swagger UI có sẵn tại: http://localhost:3000/api-docs
 
-Hoặc xem file swagger.yaml trong thư mục gốc.
+Swagger UI:
+```
+http://localhost:3000/api-docs
+```
 
-# Bảo Mật
-Mật khẩu được hash bằng bcrypt (12 rounds)
+Hoặc xem file:
+```
+swagger.yaml
+```
 
-JWT token hết hạn sau 30 ngày
+---
 
-Rate limiting: 100 requests/15 phút
+# Security
 
-Helmet.js bảo vệ HTTP headers
+- Hash mật khẩu bằng bcrypt (12 rounds)
+- JWT expiration: 30 ngày
+- Rate limit: 100 requests / 15 phút
+- Helmet bảo vệ HTTP headers
+- Input validation với express-validator
 
-Input validation với express-validator
+---
 
-# Tác Giả
-Backend Developer: Nguyễn Ngọc Thiện
+# Authors
 
-Frontend Developer: Nguyễn Huy
+Backend Developer: **Nguyễn Ngọc Thiện**  
+Frontend Developer: **Nguyễn Huy**  
 
-Project: Assignment 3 - Mobile Application Development
+Project: Assignment 3 — Mobile Application Development
 
-License
-MIT License - Xem file LICENSE để biết thêm chi tiết.
+---
 
-© 2026 Bận hay Lười? - All Rights Reserved
+# License
 
+MIT License — xem file `LICENSE` để biết thêm chi tiết.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 2.1 Tạo thư mục dự án
-
-# Mở Terminal (Mac/Linux) hoặc Command Prompt (Windows)
-cd Desktop  # hoặc thư mục bạn muốn
-mkdir ban-hay-luoi-backend
-cd ban-hay-luoi-backend
-
-2.2 Khởi tạo project và cài dependencies
-
-# Khởi tạo npm project
-npm init -y
-
-# Cài đặt tất cả dependencies
-npm install express mongoose bcryptjs jsonwebtoken cors helmet morgan dotenv express-rate-limit express-validator swagger-ui-express yamljs
-
-# Cài dev dependencies
-npm install --save-dev jest nodemon supertest mongodb-memory-server eslint
-
-2.3 Tạo cấu trúc thư mục
-
-# Tạo tất cả thư mục cần thiết
-mkdir -p src/{config,controllers,middleware,models,routes,services,utils,validators}
-mkdir -p tests/{unit,integration} -->
+© 2026 Bận Hay Lười? — All Rights Reserved
