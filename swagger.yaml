@@ -1,0 +1,295 @@
+openapi: 3.0.3
+info:
+  title: "Bận hay Lười? API"
+  description: "API documentation for the Bận hay Lười? mobile application"
+  version: "2.0.0"
+  contact:
+    name: "Development Team"
+    email: "support@banhayluoi.app"
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local development server
+  - url: https://ban-hay-luoi-api.up.railway.app/api
+    description: Production server
+
+tags:
+  - name: "Auth"
+    description: "Authentication endpoints"
+  - name: "Quiz & History"
+    description: "Quiz submission and history management"
+  - name: "Feedback"
+    description: "User feedback submission"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        displayName:
+          type: string
+        stats:
+          $ref: '#/components/schemas/UserStats'
+          
+    UserStats:
+      type: object
+      properties:
+        totalQuizzes:
+          type: number
+        currentStreak:
+          type: number
+        longestStreak:
+          type: number
+          
+    History:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        state:
+          type: string
+          enum: [exhausted, tired, lazy_with_deadline, ready, focused, unmotivated]
+        scores:
+          $ref: '#/components/schemas/Scores'
+        stateDetails:
+          $ref: '#/components/schemas/StateDetails'
+        createdAt:
+          type: string
+          format: date-time
+          
+    Scores:
+      type: object
+      properties:
+        energy:
+          type: number
+        work:
+          type: number
+        psychology:
+          type: number
+        environment:
+          type: number
+        total:
+          type: number
+          
+    StateDetails:
+      type: object
+      properties:
+        name:
+          type: string
+        emoji:
+          type: string
+        color:
+          type: string
+        description:
+          type: string
+        recommendations:
+          type: array
+          items:
+            type: string
+          
+
+security:
+  - BearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+                displayName:
+                  type: string
+      responses:
+        201:
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      token:
+                        type: string
+        409:
+          description: User already exists
+          
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Login successful
+        401:
+          description: Invalid credentials
+          
+  /history/submit:
+    post:
+      tags:
+        - Quiz & History
+      summary: Submit quiz answers and get results
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - answers
+              properties:
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      questionId:
+                        type: number
+                      group:
+                        type: string
+                      selectedOption:
+                        type: number
+                      score:
+                        type: number
+                meta:
+                  type: object
+      responses:
+        201:
+          description: Quiz processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      history:
+                        $ref: '#/components/schemas/History'
+                        
+  /history:
+    get:
+      tags:
+        - Quiz & History
+      summary: Get user's quiz history
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: number
+        - name: limit
+          in: query
+          schema:
+            type: number
+        - name: state
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: History retrieved successfully
+          
+  /history/{id}:
+    delete:
+      tags:
+        - Quiz & History
+      summary: Delete a specific history entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: History deleted
+        404:
+          description: History not found
+          
+  /feedback:
+    post:
+      tags:
+        - Feedback
+      summary: Submit feedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - title
+                - description
+              properties:
+                type:
+                  type: string
+                  enum: [bug, feature, improvement, other]
+                severity:
+                  type: string
+                  enum: [critical, major, minor, suggestion]
+                title:
+                  type: string
+                description:
+                  type: string
+      responses:
+        201:
+          description: Feedback submitted

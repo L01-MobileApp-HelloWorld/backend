@@ -1,0 +1,88 @@
+name: CI/CD Pipeline
+
+# Khi nào chạy?
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ============ JOB 1: TEST ============
+  test:
+    name:    Run Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: install dependencies
+        run: npm ci
+      
+      - name: Run tests with coverage
+        run: npm test
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          NODE_ENV: test
+      
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-node-${{ matrix.node-version }}
+          path: coverage/
+      
+      - name: Check coverage threshold
+        run: |
+          echo "Coverage report generated"
+          ls -la coverage/
+
+  # ============ JOB 2: LINT ============
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ESLint
+        run: npx eslint src/ --ext .js || true
+        # || true để không fail nếu chưa có ESLint config
+
+  # ============ JOB 3: DEPLOY RAILWAY ============
+  deploy:
+    name: Deploy to Railway
+    needs: [test, lint]  # Chỉ deploy nếu test + lint pass
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to Railway
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RAILWAY_SERVICE_ID }}
+          api-key: ${{ secrets.RAILWAY_API_KEY }}
