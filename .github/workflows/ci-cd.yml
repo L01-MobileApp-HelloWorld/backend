@@ -84,5 +84,4 @@ jobs:
       - name: Deploy to Railway
         uses: railwayapp/railway-github-action@v1
         with:
-          service-id: ${{ secrets.RAILWAY_SERVICE_ID }}
-          api-key: ${{ secrets.RAILWAY_API_KEY }}
+          railway_token: ${{ secrets.RAILWAY_TOKEN }}
