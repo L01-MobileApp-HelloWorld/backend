@@ -70,22 +70,22 @@ jobs:
         run: npx eslint src/ --ext .js || true
         # || true để không fail nếu chưa có ESLint config
 
-  # # ============ JOB 3: DEPLOY RAILWAY ============
-  # deploy:
-  #   name: Deploy to Railway
-  #   needs: [test, lint]
-  #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-  #   runs-on: ubuntu-latest
+  # ============ JOB 3: DEPLOY RAILWAY ============
+  deploy:
+    name: Deploy to Railway
+    needs: [test, lint]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
     
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       
-  #     - name: Install Railway CLI
-  #       run: npm install -g @railway/cli
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
       
-      # - name: Deploy to Railway
-      #   run: railway up --detach
-      #   env:
-      #     RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      - name: Deploy to Railway
+        run: railway up --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           
