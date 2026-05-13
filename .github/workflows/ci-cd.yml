@@ -73,7 +73,7 @@ jobs:
   # ============ JOB 3: DEPLOY RAILWAY ============
   deploy:
     name: Deploy to Railway
-    needs: [test, lint]  # Chỉ deploy nếu test + lint pass
+    needs: [test, lint]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     
@@ -81,7 +81,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+      
       - name: Deploy to Railway
-        uses: railwayapp/railway-github-action@v1
-        with:
-          railway_token: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --detach
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
