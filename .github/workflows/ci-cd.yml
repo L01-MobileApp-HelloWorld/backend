@@ -82,7 +82,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Deploy to Railway
-        uses: johnbeynon/render-deploy-action@v0.0.8
+        uses: railwayapp/railway-github-action@v1
         with:
           service-id: ${{ secrets.RAILWAY_SERVICE_ID }}
           api-key: ${{ secrets.RAILWAY_API_KEY }}
