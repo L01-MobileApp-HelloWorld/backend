@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "seed:all": "npm run seed:user && npm run seed:history",
+    "seed:history": "node scripts/seedHistory.js",
+    "seed:user": "node scripts/seedUser.js",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
