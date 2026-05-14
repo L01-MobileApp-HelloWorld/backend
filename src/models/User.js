@@ -41,6 +41,16 @@ const userSchema = new mongoose.Schema({
     longestStreak: { type: Number, default: 0 },
     lastQuizDate: { type: Date }
   },
+  refreshTokenHash: {
+    type: String,
+    select: false,
+    default: null
+  },
+  refreshTokenExpiresAt: {
+    type: Date,
+    select: false,
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -73,6 +83,8 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 userSchema.methods.toJSON = function() {
   const obj = this.toObject();
   delete obj.password;
+  delete obj.refreshTokenHash;
+  delete obj.refreshTokenExpiresAt;
   return obj;
 };
 

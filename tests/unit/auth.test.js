@@ -43,6 +43,7 @@ describe('POST /api/auth/register', () => {
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.data.token).toBeDefined();
+    expect(res.body.data.refreshToken).toBeDefined();
     expect(res.body.data.user.username).toBe('testuser');
   });
 
@@ -110,6 +111,7 @@ describe('POST /api/auth/login', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.token).toBeDefined();
+    expect(res.body.data.refreshToken).toBeDefined();
   });
 
   it('should reject wrong password', async () => {
@@ -174,6 +176,63 @@ describe('GET /api/auth/profile', () => {
 
     expect(res.status).toBe(401);
     expect(res.body.success).toBe(false);
+  });
+});
+
+describe('POST /api/auth/refresh', () => {
+  it('should rotate refresh token and return a new access token', async () => {
+    const registerRes = await request(app)
+      .post('/api/auth/register')
+      .send({
+        username: 'refreshuser',
+        email: 'refresh@test.com',
+        password: '123456'
+      });
+
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: registerRes.body.data.refreshToken });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.token).toBeDefined();
+    expect(res.body.data.refreshToken).toBeDefined();
+    expect(res.body.data.refreshToken).not.toBe(registerRes.body.data.refreshToken);
+  });
+
+  it('should reject invalid refresh token', async () => {
+    const res = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: 'bad-token' });
+
+    expect(res.status).toBe(401);
+    expect(res.body.success).toBe(false);
+  });
+});
+
+describe('POST /api/auth/logout', () => {
+  it('should revoke refresh token on logout', async () => {
+    const registerRes = await request(app)
+      .post('/api/auth/register')
+      .send({
+        username: 'logoutuser',
+        email: 'logout@test.com',
+        password: '123456'
+      });
+
+    const logoutRes = await request(app)
+      .post('/api/auth/logout')
+      .send({ refreshToken: registerRes.body.data.refreshToken });
+
+    expect(logoutRes.status).toBe(200);
+    expect(logoutRes.body.success).toBe(true);
+
+    const refreshRes = await request(app)
+      .post('/api/auth/refresh')
+      .send({ refreshToken: registerRes.body.data.refreshToken });
+
+    expect(refreshRes.status).toBe(401);
+    expect(refreshRes.body.success).toBe(false);
   });
 });
 

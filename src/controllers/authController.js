@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
 
@@ -8,6 +9,30 @@ const generateToken = (userId) => {
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '30d' }
   );
+};
+
+const getRefreshTokenExpiryDate = () => {
+  const refreshTokenDays = Number(process.env.REFRESH_TOKEN_EXPIRES_IN_DAYS || 30);
+  return new Date(Date.now() + (refreshTokenDays * 24 * 60 * 60 * 1000));
+};
+
+const hashRefreshToken = (refreshToken) => {
+  return crypto.createHash('sha256').update(refreshToken).digest('hex');
+};
+
+const generateRefreshToken = () => {
+  return crypto.randomBytes(40).toString('hex');
+};
+
+const issueAuthTokens = async (user) => {
+  const token = generateToken(user._id);
+  const refreshToken = generateRefreshToken();
+
+  user.refreshTokenHash = hashRefreshToken(refreshToken);
+  user.refreshTokenExpiresAt = getRefreshTokenExpiryDate();
+  await user.save();
+
+  return { token, refreshToken };
 };
 
 exports.register = async (req, res, next) => {
@@ -45,14 +70,14 @@ exports.register = async (req, res, next) => {
       displayName: displayName || username
     });
 
-    // Generate token
-    const token = generateToken(user._id);
+    const { token, refreshToken } = await issueAuthTokens(user);
 
     res.status(201).json({
       success: true,
       data: {
         user: user.toJSON(),
-        token
+        token,
+        refreshToken
       }
     });
   } catch (error) {
@@ -91,15 +116,72 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // Generate token
-    const token = generateToken(user._id);
+    const { token, refreshToken } = await issueAuthTokens(user);
 
     res.status(200).json({
       success: true,
       data: {
         user: user.toJSON(),
-        token
+        token,
+        refreshToken
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.refreshToken = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    const refreshTokenHash = hashRefreshToken(refreshToken);
+
+    const user = await User.findOne({
+      refreshTokenHash,
+      refreshTokenExpiresAt: { $gt: new Date() }
+    }).select('+refreshTokenHash +refreshTokenExpiresAt');
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token không hợp lệ hoặc đã hết hạn'
+      });
+    }
+
+    const tokens = await issueAuthTokens(user);
+
+    res.status(200).json({
+      success: true,
+      data: tokens
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.logout = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    const refreshTokenHash = hashRefreshToken(refreshToken);
+
+    const user = await User.findOne({
+      refreshTokenHash
+    }).select('+refreshTokenHash +refreshTokenExpiresAt');
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token không hợp lệ'
+      });
+    }
+
+    user.refreshTokenHash = null;
+    user.refreshTokenExpiresAt = null;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Đăng xuất thành công'
     });
   } catch (error) {
     next(error);

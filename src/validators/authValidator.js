@@ -42,6 +42,18 @@ const loginRules = [
     .notEmpty().withMessage('Mật khẩu không được để trống'),
 ];
 
+const refreshTokenRules = [
+  body('refreshToken')
+    .trim()
+    .notEmpty().withMessage('Refresh token không được để trống'),
+];
+
+const logoutRules = [
+  body('refreshToken')
+    .trim()
+    .notEmpty().withMessage('Refresh token không được để trống'),
+];
+
 /**
  * Validation rules cho update profile
  */
@@ -63,5 +75,7 @@ const updateProfileRules = [
 module.exports = {
   registerRules,
   loginRules,
+  refreshTokenRules,
+  logoutRules,
   updateProfileRules,
 };
