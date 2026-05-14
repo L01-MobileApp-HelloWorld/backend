@@ -14,6 +14,7 @@ const authRoutes = require('./routes/authRoutes');
 const historyRoutes = require('./routes/historyRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const questionRoutes = require('./routes/questionRoutes');
 const { trackUserBehavior } = require('./middleware/analytics');
 
 
@@ -59,6 +60,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/questions', questionRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use(trackUserBehavior);  // Track mọi request

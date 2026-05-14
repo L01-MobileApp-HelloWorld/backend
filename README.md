@@ -184,6 +184,18 @@ Sau khi chạy test sẽ hiển thị coverage report.
 
 ---
 
+## Question
+
+- **GET /api/questions**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Lấy danh sách 10 câu hỏi
+
+  
+- **POST /api/questions/seed**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Khởi tạo câu hỏi mẫu
+
+
 ## Quiz & History
 
 - **POST /api/history/submit**

@@ -20,6 +20,8 @@ tags:
     description: "Quiz submission and history management"
   - name: "Feedback"
     description: "User feedback submission"
+  - name: Questions
+    description: Lấy danh sách câu hỏi quiz
 
 components:
   securitySchemes:
@@ -51,6 +53,36 @@ components:
         currentStreak:
           type: number
         longestStreak:
+          type: number
+    
+    Question:
+      type: object
+      properties:
+        _id:
+          type: string
+        questionId:
+          type: number
+        group:
+          type: string
+          enum: [energy, work, psychology, environment]
+        question:
+          type: string
+        hint:
+          type: string
+        options:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              emoji:
+                type: string
+              subtext:
+                type: string
+              score:
+                type: number
+        order:
           type: number
           
     History:
@@ -179,6 +211,54 @@ paths:
           description: Login successful
         401:
           description: Invalid credentials
+
+    /questions:
+    get:
+      tags:
+        - Questions
+      summary: Lấy danh sách 10 câu hỏi
+      description: Trả về 10 câu hỏi kèm options để frontend hiển thị
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Danh sách câu hỏi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      questions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Question'
+                      total:
+                        type: number
+                        example: 10
+                      groups:
+                        type: array
+                        items:
+                          type: string
+        401:
+          description: Chưa đăng nhập
+
+  /questions/seed:
+    post:
+      tags:
+        - Questions
+      summary: Tạo 10 câu hỏi mẫu
+      description: Chỉ cần gọi 1 lần để khởi tạo dữ liệu
+      security:
+        - BearerAuth: []
+      responses:
+        201:
+          description: Đã tạo câu hỏi thành công
           
   /history/submit:
     post:
