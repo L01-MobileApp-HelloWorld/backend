@@ -213,40 +213,40 @@ paths:
           description: Invalid credentials
 
     /questions:
-    get:
-      tags:
-        - Questions
-      summary: Lấy danh sách 10 câu hỏi
-      description: Trả về 10 câu hỏi kèm options để frontend hiển thị
-      security:
-        - BearerAuth: []
-      responses:
-        200:
-          description: Danh sách câu hỏi
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      questions:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Question'
-                      total:
-                        type: number
-                        example: 10
-                      groups:
-                        type: array
-                        items:
-                          type: string
-        401:
-          description: Chưa đăng nhập
+      get:
+        tags:
+          - Questions
+        summary: Lấy danh sách 10 câu hỏi
+        description: Trả về 10 câu hỏi kèm options để frontend hiển thị
+        security:
+          - BearerAuth: []
+        responses:
+          200:
+            description: Danh sách câu hỏi
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      example: true
+                    data:
+                      type: object
+                      properties:
+                        questions:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Question'
+                        total:
+                          type: number
+                          example: 10
+                        groups:
+                          type: array
+                          items:
+                            type: string
+          401:
+            description: Chưa đăng nhập
 
   /questions/seed:
     post:
