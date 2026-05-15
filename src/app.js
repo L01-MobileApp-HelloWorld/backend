@@ -75,6 +75,10 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
@@ -85,9 +89,6 @@ app.use((req, res) => {
 
 setupSentryErrorHandler(app); // SENTRY ERROR HANDLER - Đặt TRƯỚC errorHandler
 
-app.get("/debug-sentry", function mainHandler(req, res) {
-  throw new Error("My first Sentry error!");
-});
 
 // Error handler
 app.use(errorHandler);
