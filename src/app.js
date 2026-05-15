@@ -21,7 +21,6 @@ const { trackUserBehavior } = require('./middleware/analytics');
 const app = express();
 
 initSentry(app);              // SENTRY - đặt ĐẦU TIÊN
-setupSentryErrorHandler(app); // SENTRY ERROR HANDLER - Đặt TRƯỚC errorHandler
 
 
 // Security middleware
@@ -82,6 +81,12 @@ app.use((req, res) => {
     success: false,
     message: 'Không tìm thấy route này'
   });
+});
+
+setupSentryErrorHandler(app); // SENTRY ERROR HANDLER - Đặt TRƯỚC errorHandler
+
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
 });
 
 // Error handler
