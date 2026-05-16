@@ -6,6 +6,7 @@ const { protect } = require('../middleware/auth');
 router.use(protect);
 
 router.post('/submit', historyController.submitQuiz);
+router.post('/analyze', protect, historyController.submitQuiz);
 router.get('/', historyController.getHistory);
 router.get('/:id', historyController.getHistoryById);
 router.delete('/:id', historyController.deleteHistory);
