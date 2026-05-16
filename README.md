@@ -236,6 +236,7 @@ Deploy tự động qua GitHub:
 4. Thêm Environment Variables trên Railway dashboard  
 5. Mỗi lần push → tự động deploy  
 
+Link deploy trên railway : https://backend-production-28f1.up.railway.app/'
 ---
 
 # CI/CD Pipeline
