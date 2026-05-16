@@ -126,25 +126,56 @@ exports.getProfile = async (req, res, next) => {
   }
 };
 
+// Cập nhật profile (displayName)
 exports.updateProfile = async (req, res, next) => {
   try {
-    const { displayName, preferences } = req.body;
+    const { displayName } = req.body;
     
-    const updateData = {};
-    if (displayName) updateData.displayName = displayName;
-    if (preferences) updateData.preferences = preferences;
+    if (!displayName) {
+      return res.status(400).json({ success: false, message: 'Thiếu displayName' });
+    }
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { $set: updateData },
-      { new: true, runValidators: true }
+      { displayName },
+      { new: true }
     );
 
-    res.status(200).json({
-      success: true,
-      data: { user }
-    });
+    res.status(200).json({ success: true, data: { user } });
   } catch (error) {
     next(error);
   }
 };
+
+// Đổi mật khẩu
+exports.changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Thiếu mật khẩu cũ hoặc mới' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ success: false, message: 'Mật khẩu mới tối thiểu 6 ký tự' });
+    }
+
+    // Lấy user kèm password
+    const user = await User.findById(req.user.id).select('+password');
+    
+    // Kiểm tra mật khẩu cũ
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Mật khẩu hiện tại không đúng' });
+    }
+
+    // Cập nhật mật khẩu mới
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Đổi mật khẩu thành công' });
+  } catch (error) {
+    next(error);
+  }
+};
+
