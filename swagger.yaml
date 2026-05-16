@@ -280,9 +280,17 @@ paths:
       tags:
         - Questions
       summary: Lấy danh sách 10 câu hỏi
-      description: Trả về 10 câu hỏi kèm options để frontend hiển thị
+      description: Trả về danh sách câu hỏi kèm options để frontend hiển thị. Có thể lọc theo `questionIds`.
       security:
         - BearerAuth: []
+      parameters:
+        - name: questionIds
+          in: query
+          required: false
+          description: Danh sách questionId, phân tách bằng dấu phẩy. Ví dụ `1,2,3`
+          schema:
+            type: string
+            example: "1,2,3"
       responses:
         200:
           description: Danh sách câu hỏi
@@ -308,6 +316,8 @@ paths:
                         type: array
                         items:
                           type: string
+        400:
+          description: `questionIds` không hợp lệ
         401:
           description: Chưa đăng nhập
 
@@ -323,7 +333,7 @@ paths:
         201:
           description: Đã tạo câu hỏi thành công
           
-  /history/submit:
+  /histories/submit:
     post:
       tags:
         - Quiz & History
@@ -368,7 +378,7 @@ paths:
                       history:
                         $ref: '#/components/schemas/History'
                         
-  /history:
+  /histories:
     get:
       tags:
         - Quiz & History
@@ -390,7 +400,34 @@ paths:
         200:
           description: History retrieved successfully
           
-  /history/{id}:
+  /histories/{id}:
+    get:
+      tags:
+        - Quiz & History
+      summary: Get a specific history entry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: History retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      history:
+                        $ref: '#/components/schemas/History'
+        404:
+          description: History not found
     delete:
       tags:
         - Quiz & History

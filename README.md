@@ -188,7 +188,7 @@ Sau khi chạy test sẽ hiển thị coverage report.
 
 - **GET /api/questions**
   - Auth: ✅ Yêu cầu JWT
-  - Description: Lấy danh sách 10 câu hỏi
+  - Description: Lấy danh sách câu hỏi. Có thể lọc bằng `?questionIds=1,2,3`
 
   
 - **POST /api/questions/seed**

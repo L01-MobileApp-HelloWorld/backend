@@ -2,7 +2,26 @@ const Question = require('../models/Question');
 
 exports.getQuestions = async (req, res, next) => {
   try {
-    const questions = await Question.find()
+    const { questionIds } = req.query;
+    const query = {};
+
+    if (questionIds) {
+      const ids = questionIds
+        .split(',')
+        .map(id => Number(id.trim()))
+        .filter(id => Number.isInteger(id));
+
+      if (ids.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'questionIds phải là danh sách số, ví dụ: 1,2,3'
+        });
+      }
+
+      query.questionId = { $in: [...new Set(ids)] };
+    }
+
+    const questions = await Question.find(query)
       .sort({ order: 1 })
       .select('-__v');
 
