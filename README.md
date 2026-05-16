@@ -198,19 +198,19 @@ Sau khi chạy test sẽ hiển thị coverage report.
 
 ## Quiz & History
 
-- **POST /api/history/submit**
+- **POST /api/histories/submit**
   - Auth: ✅ Yêu cầu JWT
   - Description: Nộp bài quiz (10 câu hỏi)
 
-- **GET /api/history**
+- **GET /api/histories**
   - Auth: ✅ Yêu cầu JWT
   - Description: Lấy danh sách lịch sử làm quiz
 
-- **GET /api/history/:id**
+- **GET /api/histories/:id**
   - Auth: ✅ Yêu cầu JWT
   - Description: Lấy chi tiết một lần làm quiz
 
-- **DELETE /api/history/:id**
+- **DELETE /api/histories/:id**
   - Auth: ✅ Yêu cầu JWT
   - Description: Xóa một bản ghi lịch sử
 

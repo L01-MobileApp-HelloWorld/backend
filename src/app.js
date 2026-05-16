@@ -60,7 +60,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/questions', questionRoutes);
-app.use('/api/history', historyRoutes);
+app.use('/api/histories', historyRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use(trackUserBehavior);  // Track mọi request
 app.use('/api/analytics', analyticsRoutes);
