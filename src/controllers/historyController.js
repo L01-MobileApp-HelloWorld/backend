@@ -91,20 +91,10 @@ exports.getHistory = async (req, res, next) => {
       .limit(parseInt(limit))
       .select('-answers'); // Exclude detailed answers for list view
 
-    // Group by date
-    const grouped = {};
-    histories.forEach(h => {
-      const dateKey = new Date(h.createdAt).toDateString();
-      if (!grouped[dateKey]) {
-        grouped[dateKey] = [];
-      }
-      grouped[dateKey].push(h);
-    });
-
     res.status(200).json({
       success: true,
       data: {
-        histories: grouped,
+        histories,
         pagination: {
           total,
           page: parseInt(page),

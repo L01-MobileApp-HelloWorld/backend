@@ -38,7 +38,7 @@ afterEach(async () => {
   await History.deleteMany({});
 });
 
-describe('POST /api/history/submit', () => {
+describe('POST /api/histories/submit', () => {
   const validAnswers = [
     { questionId: 1, group: 'energy', selectedOption: 2, score: 4 },
     { questionId: 2, group: 'energy', selectedOption: 1, score: 2 },
@@ -54,7 +54,7 @@ describe('POST /api/history/submit', () => {
 
   it('should submit quiz and return results', async () => {
     const res = await request(app)
-      .post('/api/history/submit')
+      .post('/api/histories/submit')
       .set('Authorization', `Bearer ${token}`)
       .send({ answers: validAnswers });
 
@@ -67,7 +67,7 @@ describe('POST /api/history/submit', () => {
 
   it('should reject incomplete answers', async () => {
     const res = await request(app)
-      .post('/api/history/submit')
+      .post('/api/histories/submit')
       .set('Authorization', `Bearer ${token}`)
       .send({ answers: [{ questionId: 1, group: 'energy', score: 3 }] });
 
@@ -77,56 +77,67 @@ describe('POST /api/history/submit', () => {
 
   it('should require authentication', async () => {
     const res = await request(app)
-      .post('/api/history/submit')
+      .post('/api/histories/submit')
       .send({ answers: validAnswers });
 
     expect(res.status).toBe(401);
   });
 });
 
-describe('GET /api/history', () => {
+describe('GET /api/histories', () => {
   beforeEach(async () => {
-    // Tạo 2 history mẫu
     await History.create([
       {
         userId,
         answers: [],
         scores: { energy: 50, work: 60, psychology: 45, environment: 55, total: 52 },
         state: 'ready',
-        stateDetails: { name: 'Sẵn sàng', emoji: '✅', color: '#06D6A0' }
+        stateDetails: { name: 'Sẵn sàng', emoji: '✅', color: '#06D6A0' },
+        createdAt: new Date('2024-01-02T10:00:00.000Z')
       },
       {
         userId,
         answers: [],
         scores: { energy: 20, work: 30, psychology: 15, environment: 25, total: 22 },
         state: 'exhausted',
-        stateDetails: { name: 'Kiệt sức', emoji: '😫', color: '#EF476F' }
+        stateDetails: { name: 'Kiệt sức', emoji: '😫', color: '#EF476F' },
+        createdAt: new Date('2024-01-03T10:00:00.000Z')
       }
     ]);
   });
 
   it('should return user history', async () => {
     const res = await request(app)
-      .get('/api/history')
+      .get('/api/histories')
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.histories).toBeDefined();
+    expect(Array.isArray(res.body.data.histories)).toBe(true);
+    expect(res.body.data.histories).toHaveLength(2);
     expect(res.body.data.pagination.total).toBe(2);
+    expect(res.body.data.histories[0].state).toBe('exhausted');
+    expect(new Date(res.body.data.histories[0].createdAt).getTime()).toBeGreaterThan(
+      new Date(res.body.data.histories[1].createdAt).getTime()
+    );
   });
 
   it('should filter by state', async () => {
     const res = await request(app)
-      .get('/api/history?state=exhausted')
+      .get('/api/histories?state=exhausted')
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).toBe(200);
+    expect(Array.isArray(res.body.data.histories)).toBe(true);
+    expect(res.body.data.histories).toHaveLength(1);
     expect(res.body.data.pagination.total).toBe(1);
+    res.body.data.histories.forEach((history) => {
+      expect(history.state).toBe('exhausted');
+    });
   });
 });
 
-describe('DELETE /api/history/:id', () => {
+describe('DELETE /api/histories/:id', () => {
   it('should delete specific history entry', async () => {
     const entry = await History.create({
       userId,
@@ -137,7 +148,7 @@ describe('DELETE /api/history/:id', () => {
     });
 
     const res = await request(app)
-      .delete(`/api/history/${entry._id}`)
+      .delete(`/api/histories/${entry._id}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).toBe(200);
@@ -151,7 +162,7 @@ describe('DELETE /api/history/:id', () => {
   it('should return 404 for non-existent id', async () => {
     const fakeId = new mongoose.Types.ObjectId();
     const res = await request(app)
-      .delete(`/api/history/${fakeId}`)
+      .delete(`/api/histories/${fakeId}`)
       .set('Authorization', `Bearer ${token}`);
 
     expect(res.status).toBe(404);

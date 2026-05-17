@@ -417,6 +417,30 @@ paths:
       responses:
         200:
           description: History retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      histories:
+                        type: array
+                        description: Quiz history list sorted by newest first
+                        items:
+                          $ref: '#/components/schemas/History'
+                      pagination:
+                        type: object
+                        properties:
+                          total:
+                            type: number
+                          page:
+                            type: number
+                          pages:
+                            type: number
           
   /histories/{id}:
     get:
