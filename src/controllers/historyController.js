@@ -1,6 +1,47 @@
 const History = require('../models/History');
 const User = require('../models/User');
+const Question = require('../models/Question');
 const quizScoringService = require('../services/quizScoringService');
+
+const randomInt = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+const buildRandomAnswers = (questions) => {
+  return questions.map((question) => {
+    const selectedOption = randomInt(0, 4);
+
+    return {
+      questionId: question.questionId,
+      group: question.group,
+      selectedOption,
+      score: selectedOption + 1
+    };
+  });
+};
+
+const buildSeedHistory = (userId, questions, index) => {
+  const answers = buildRandomAnswers(questions);
+  const result = quizScoringService.processQuiz(answers);
+  const createdAt = new Date();
+
+  createdAt.setDate(createdAt.getDate() - index);
+  createdAt.setHours(randomInt(6, 23), randomInt(0, 59), randomInt(0, 59), 0);
+
+  return {
+    userId,
+    answers,
+    scores: result.scores,
+    state: result.state,
+    stateDetails: result.stateDetails,
+    meta: {
+      completionTime: randomInt(45, 600),
+      deviceInfo: ['iPhone', 'Android', 'Web'][index % 3],
+      appVersion: 'seed-script-1.0.0'
+    },
+    createdAt
+  };
+};
 
 exports.submitQuiz = async (req, res, next) => {
   try {
@@ -56,6 +97,55 @@ exports.submitQuiz = async (req, res, next) => {
     res.status(201).json({
       success: true,
       data: { history }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.seedHistories = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    const [user, questions] = await Promise.all([
+      User.findById(userId),
+      Question.find({})
+        .sort({ order: 1, questionId: 1 })
+        .select('questionId group options')
+        .lean()
+    ]);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy người dùng'
+      });
+    }
+
+    if (questions.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Chưa có dữ liệu câu hỏi để seed history'
+      });
+    }
+
+    const histories = Array.from({ length: 100 }, (_, index) => {
+      return buildSeedHistory(user._id, questions, index);
+    });
+
+    const insertedHistories = await History.insertMany(histories);
+
+    user.stats.totalQuizzes += insertedHistories.length;
+    user.stats.lastQuizDate = new Date();
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      message: `Đã tạo ${insertedHistories.length} history cho user hiện tại`,
+      data: {
+        userId: user._id,
+        count: insertedHistories.length
+      }
     });
   } catch (error) {
     next(error);

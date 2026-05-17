@@ -206,6 +206,10 @@ Sau khi chạy test sẽ hiển thị coverage report.
   - Auth: ✅ Yêu cầu JWT
   - Description: Nộp bài quiz (10 câu hỏi)
 
+- **POST /api/histories/seed**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Tạo 100 history mẫu cho user hiện tại từ JWT, không cần payload
+
 - **GET /api/histories**
   - Auth: ✅ Yêu cầu JWT
   - Description: Lấy danh sách lịch sử làm quiz dạng mảng, hỗ trợ `sort=createdAt:asc|desc` và mặc định là `createdAt:desc`

@@ -7,6 +7,7 @@ const { getHistoryRules } = require('../validators/historyValidator');
 
 router.use(protect);
 
+router.post('/seed', historyController.seedHistories);
 router.post('/submit', historyController.submitQuiz);
 router.post('/analyze', protect, historyController.submitQuiz);
 router.get('/', getHistoryRules, validate, historyController.getHistory);
