@@ -182,6 +182,10 @@ Sau khi chạy test sẽ hiển thị coverage report.
   - Auth: ✅ Yêu cầu JWT
   - Description: Lấy thông tin người dùng hiện tại
 
+- **PUT /api/auth/profile**
+  - Auth: ✅ Yêu cầu JWT
+  - Description: Cập nhật `displayName` và/hoặc `preferences` của người dùng
+
 ---
 
 ## Question

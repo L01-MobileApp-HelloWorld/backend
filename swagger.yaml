@@ -226,7 +226,7 @@ paths:
     put:
       tags:
         - Auth
-      summary: Cập nhật displayName
+      summary: Cập nhật profile và preferences
       security:
         - BearerAuth: []
       requestBody:
@@ -235,12 +235,30 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - displayName
               properties:
                 displayName:
                   type: string
                   example: "Nguyễn Văn A"
+                preferences:
+                  type: object
+                  properties:
+                    darkMode:
+                      type: boolean
+                      example: false
+                    language:
+                      type: string
+                      enum: [vi, en]
+                      example: "en"
+                    notificationsEnabled:
+                      type: boolean
+                      example: true
+                    reminderTime:
+                      type: string
+                      example: "21:30"
+                    reminderFrequency:
+                      type: string
+                      enum: [daily, twice, custom]
+                      example: "daily"
       responses:
         200:
           description: Cập nhật thành công
