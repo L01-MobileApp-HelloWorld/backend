@@ -51,6 +51,10 @@ const updateProfileRules = [
     .trim()
     .isLength({ max: 50 }).withMessage('Tên hiển thị tối đa 50 ký tự'),
 
+  body('preferences')
+    .optional()
+    .isObject().withMessage('Preferences phải là object'),
+
   body('preferences.darkMode')
     .optional()
     .isBoolean().withMessage('Dark mode phải là boolean'),
@@ -58,6 +62,18 @@ const updateProfileRules = [
   body('preferences.language')
     .optional()
     .isIn(['vi', 'en']).withMessage('Ngôn ngữ không hợp lệ'),
+
+  body('preferences.notificationsEnabled')
+    .optional()
+    .isBoolean().withMessage('Notifications enabled phải là boolean'),
+
+  body('preferences.reminderTime')
+    .optional()
+    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/).withMessage('Reminder time phải theo định dạng HH:mm'),
+
+  body('preferences.reminderFrequency')
+    .optional()
+    .isIn(['daily', 'twice', 'custom']).withMessage('Reminder frequency không hợp lệ'),
 ];
 
 module.exports = {

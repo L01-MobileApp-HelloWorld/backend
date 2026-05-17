@@ -129,16 +129,40 @@ exports.getProfile = async (req, res, next) => {
 // Cập nhật profile (displayName)
 exports.updateProfile = async (req, res, next) => {
   try {
-    const { displayName } = req.body;
-    
-    if (!displayName) {
-      return res.status(400).json({ success: false, message: 'Thiếu displayName' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()
+      });
+    }
+
+    const { displayName, preferences } = req.body;
+    const updateData = {};
+
+    if (displayName !== undefined) {
+      updateData.displayName = displayName;
+    }
+
+    if (preferences && typeof preferences === 'object' && !Array.isArray(preferences)) {
+      Object.entries(preferences).forEach(([key, value]) => {
+        if (value !== undefined) {
+          updateData[`preferences.${key}`] = value;
+        }
+      });
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cần ít nhất một trường để cập nhật'
+      });
     }
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { displayName },
-      { new: true }
+      updateData,
+      { new: true, runValidators: true }
     );
 
     res.status(200).json({ success: true, data: { user } });
