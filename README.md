@@ -208,7 +208,7 @@ Sau khi chạy test sẽ hiển thị coverage report.
 
 - **GET /api/histories**
   - Auth: ✅ Yêu cầu JWT
-  - Description: Lấy danh sách lịch sử làm quiz dạng mảng, mặc định sắp xếp mới nhất trước
+  - Description: Lấy danh sách lịch sử làm quiz dạng mảng, hỗ trợ `sort=createdAt:asc|desc` và mặc định là `createdAt:desc`
 
 - **GET /api/histories/:id**
   - Auth: ✅ Yêu cầu JWT

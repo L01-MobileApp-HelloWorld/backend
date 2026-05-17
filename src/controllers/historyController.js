@@ -69,7 +69,8 @@ exports.getHistory = async (req, res, next) => {
       limit = 20,
       startDate,
       endDate,
-      state 
+      state,
+      sort = 'createdAt:desc'
     } = req.query;
 
     const query = { userId: req.user.id };
@@ -84,9 +85,12 @@ exports.getHistory = async (req, res, next) => {
       query.state = state;
     }
 
+    const [sortField, sortOrder] = sort.split(':');
+    const sortDirection = sortOrder === 'asc' ? 1 : -1;
+
     const total = await History.countDocuments(query);
     const histories = await History.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ [sortField]: sortDirection })
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
       .select('-answers'); // Exclude detailed answers for list view

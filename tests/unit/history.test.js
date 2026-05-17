@@ -135,6 +135,38 @@ describe('GET /api/histories', () => {
       expect(history.state).toBe('exhausted');
     });
   });
+
+  it('should sort histories by createdAt ascending when sort=createdAt:asc', async () => {
+    const res = await request(app)
+      .get('/api/histories?sort=createdAt:asc')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body.data.histories)).toBe(true);
+    expect(res.body.data.histories).toHaveLength(2);
+    expect(res.body.data.histories[0].state).toBe('ready');
+    expect(new Date(res.body.data.histories[0].createdAt).getTime()).toBeLessThan(
+      new Date(res.body.data.histories[1].createdAt).getTime()
+    );
+  });
+
+  it('should reject invalid sort value', async () => {
+    const res = await request(app)
+      .get('/api/histories?sort=latest')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+  });
+
+  it('should reject unsupported sort field', async () => {
+    const res = await request(app)
+      .get('/api/histories?sort=state:asc')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(400);
+    expect(res.body.success).toBe(false);
+  });
 });
 
 describe('DELETE /api/histories/:id', () => {

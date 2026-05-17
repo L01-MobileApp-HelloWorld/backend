@@ -54,6 +54,10 @@ const getHistoryRules = [
       'unmotivated',
     ]).withMessage('Trạng thái không hợp lệ'),
 
+  query('sort')
+    .optional()
+    .matches(/^createdAt:(asc|desc)$/).withMessage('Sort phải có dạng createdAt:asc hoặc createdAt:desc'),
+
   query('startDate')
     .optional()
     .isISO8601().withMessage('Ngày bắt đầu không đúng định dạng'),

@@ -414,6 +414,12 @@ paths:
           in: query
           schema:
             type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: createdAt:desc
+            pattern: '^createdAt:(asc|desc)$'
       responses:
         200:
           description: History retrieved successfully
@@ -429,7 +435,7 @@ paths:
                     properties:
                       histories:
                         type: array
-                        description: Quiz history list sorted by newest first
+                        description: Quiz history list sorted by the sort query param, default createdAt:desc
                         items:
                           $ref: '#/components/schemas/History'
                       pagination:
