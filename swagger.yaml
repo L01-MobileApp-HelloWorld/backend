@@ -395,6 +395,36 @@ paths:
                     properties:
                       history:
                         $ref: '#/components/schemas/History'
+
+  /histories/seed:
+    post:
+      tags:
+        - Quiz & History
+      summary: Seed 100 histories for current user
+      description: Tạo 100 history mẫu cho user hiện tại dựa trên JWT. Không cần request body.
+      responses:
+        201:
+          description: Histories seeded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                      count:
+                        type: number
+        400:
+          description: Chưa có dữ liệu câu hỏi để seed history
+        401:
+          description: Chưa đăng nhập hoặc token không hợp lệ
                         
   /histories:
     get:
