@@ -42,8 +42,33 @@ components:
           type: string
         displayName:
           type: string
+        preferences:
+          $ref: '#/components/schemas/UserPreferences'
         stats:
           $ref: '#/components/schemas/UserStats'
+
+    UserPreferences:
+      type: object
+      properties:
+        darkMode:
+          type: boolean
+        language:
+          type: string
+          enum: [vi, en]
+        notificationsEnabled:
+          type: boolean
+        reminderTime:
+          type: string
+          example: "21:30"
+        reminderFrequency:
+          type: string
+          enum: [daily, twice, custom]
+        customReminderDays:
+          type: array
+          description: Danh sách ngày nhắc khi reminderFrequency là custom. 1 = Chủ nhật, 2 = Thứ 2, ..., 7 = Thứ 7.
+          items:
+            type: integer
+            enum: [1, 2, 3, 4, 5, 6, 7]
           
     UserStats:
       type: object
@@ -240,25 +265,15 @@ paths:
                   type: string
                   example: "Nguyễn Văn A"
                 preferences:
-                  type: object
-                  properties:
-                    darkMode:
-                      type: boolean
-                      example: false
-                    language:
-                      type: string
-                      enum: [vi, en]
-                      example: "en"
-                    notificationsEnabled:
-                      type: boolean
-                      example: true
-                    reminderTime:
-                      type: string
-                      example: "21:30"
-                    reminderFrequency:
-                      type: string
-                      enum: [daily, twice, custom]
-                      example: "daily"
+                  allOf:
+                    - $ref: '#/components/schemas/UserPreferences'
+                  example:
+                    darkMode: false
+                    language: en
+                    notificationsEnabled: true
+                    reminderTime: "21:30"
+                    reminderFrequency: custom
+                    customReminderDays: [2, 4, 6]
       responses:
         200:
           description: Cập nhật thành công

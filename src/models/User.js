@@ -37,6 +37,15 @@ const userSchema = new mongoose.Schema({
       enum: ["daily", "twice", "custom"],
       default: "daily",
     },
+    customReminderDays: {
+      type: [
+        {
+          type: Number,
+          enum: [1, 2, 3, 4, 5, 6, 7],
+        },
+      ],
+      default: [],
+    },
   },
   stats: {
     totalQuizzes: { type: Number, default: 0 },

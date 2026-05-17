@@ -74,6 +74,41 @@ const updateProfileRules = [
   body('preferences.reminderFrequency')
     .optional()
     .isIn(['daily', 'twice', 'custom']).withMessage('Reminder frequency không hợp lệ'),
+
+  body('preferences.customReminderDays')
+    .optional()
+    .isArray().withMessage('customReminderDays phải là mảng'),
+
+  body('preferences.customReminderDays.*')
+    .optional()
+    .isInt({ min: 1, max: 7 }).withMessage('Mỗi ngày trong customReminderDays phải từ 1-7'),
+
+  body('preferences.customReminderDays')
+    .optional()
+    .custom((days) => {
+      if (!Array.isArray(days)) return true;
+
+      const uniqueDays = new Set(days);
+      if (uniqueDays.size !== days.length) {
+        throw new Error('customReminderDays không được chứa ngày trùng lặp');
+      }
+
+      return true;
+    }),
+
+  body('preferences')
+    .optional()
+    .custom((preferences) => {
+      if (!preferences || preferences.reminderFrequency !== 'custom') {
+        return true;
+      }
+
+      if (!Array.isArray(preferences.customReminderDays) || preferences.customReminderDays.length === 0) {
+        throw new Error('Khi reminderFrequency là custom, cần truyền customReminderDays với ít nhất 1 ngày');
+      }
+
+      return true;
+    }),
 ];
 
 module.exports = {

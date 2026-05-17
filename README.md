@@ -184,7 +184,7 @@ Sau khi chạy test sẽ hiển thị coverage report.
 
 - **PUT /api/auth/profile**
   - Auth: ✅ Yêu cầu JWT
-  - Description: Cập nhật `displayName` và/hoặc `preferences` của người dùng
+  - Description: Cập nhật `displayName` và/hoặc `preferences` của người dùng. Nếu `reminderFrequency = custom` thì gửi thêm `customReminderDays` dạng mảng số `1..7` (`1 = Chủ nhật`, `2 = Thứ 2`, ...).
 
 ---
 
