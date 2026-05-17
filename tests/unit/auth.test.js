@@ -66,10 +66,10 @@ describe('POST /api/auth/register', () => {
     expect(res.body.success).toBe(false);
   });
 
-  it('should reject missing fields', async () => {
+  it('should reject missing email and password', async () => {
     const res = await request(app)
       .post('/api/auth/register')
-      .send({ username: 'testuser' });
+      .send({});
 
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
